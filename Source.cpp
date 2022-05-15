@@ -3,51 +3,46 @@
 #include <string>
 #include <vector>
 using namespace std;
-const unsigned MAX_SEATS_IN_ZALA = 100;
-enum nomer {
-	zala1, zala2, zala3
+const unsigned MAX_SEATS_IN_HALLS = 100;
+enum number {
+	hall1, hall2, hall3
 };
-struct Zala {
-	nomer zala;
-	bool svobodnadata[30][12];
+struct Hall {
+	number hall_num;
+	bool date[30][12];
 	char seats[10][10];
-	
-	
 }; 
 
 class Perf {
 private:
-	string perfname;
-	int den, mesec;
-	Zala zala;
+	string performance_name;
+	int day, month;
+	Hall hall;
 	fstream PerformanceFile;
-
 public:
-	
-	
 	Perf() {
-		
+
 	}
-	Perf(string perfname, int den, int mesec, Zala zala) {
-		this->perfname = perfname;
-		this->den = den;
-		this->mesec = mesec;
-		this->zala = zala;
+	Perf(string performance_name, int day, int month, Hall hall) {
+		this->performance_name = performance_name;
+		this->day = day;
+		this->month = month;
+		this->hall = hall;
 	
 	}
 	Perf(const Perf& perf) {
-		perfname = perf.perfname;
-		den= perf.den;
-		mesec= perf.mesec;
-		zala = perf.zala;
+		performance_name = perf.performance_name;
+		day = perf.day;
+		month = perf.month;
+		hall = perf.hall;
 	}
 	Perf& operator=(const Perf& perf) {
 		if (this != &perf)
 		{
-			this->perfname = perf.perfname;
-			this->den = perf.den;
-			this->mesec = perf.mesec;
-			this->zala = perf.zala;
+			this->performance_name = perf.performance_name;
+			this->day = perf.day;
+			this->month = perf.month;
+			this->hall = perf.hall;
 		}
 		return *this;
 	}
@@ -58,70 +53,76 @@ public:
 	void Write(string filename) {
 		PerformanceFile.open(filename,  ios::app);
 		if (PerformanceFile.is_open()) {
-			PerformanceFile << "Perf name: " << perfname << " Perf date: " << den << " / " << mesec<< endl;
+			PerformanceFile << "Performance name: " << performance_name << " Performance date: " << day << " / " << month << endl;
 			PerformanceFile.close();
 		}
 		else {
-			cout << "error file is not open" << endl;
+			cout << "Error! File is not open!" << endl;
 		}
 	}
-	void setPerf(vector<Zala>& spisakzali) {
-		cout << "Set Perf" << endl;
-		cout << " enter name" << endl;
-		cin >> perfname;
-		cout << "now choose zala 1-3" << endl;
+	void setPerf(vector<Hall>& hall_list) {
+		cout << "Set Performance" << endl;
+		cout << "Enter name for your performance!" << endl;
+		cin >> performance_name;
+		cout << "Now choose a hall (1-3)" << endl;
 		int choice;
 		cin >> choice;
 		switch (choice) {
 		case 1:
-			for (int k = 0; k < spisakzali.size() - 1; k++) {
-				if (spisakzali[k].zala == nomer::zala1) {
-					setDate(spisakzali[k]);
-					Write("zala1.txt");
+			for (unsigned k = 0; k < hall_list.size() - 1; k++) {
+				if (hall_list[k].hall_num == number::hall1) {
+					setDate(hall_list[k]);
+					Write("hall1.txt");
 					break;
 				}
 			}
 			break;
 		case 2:
-			for (int k = 0; k < spisakzali.size() - 1; k++) {
-				if (spisakzali[k].zala == nomer::zala2) {
-					setDate(spisakzali[k]);
-					Write("zala2.txt");
+			for (unsigned k = 0; k < hall_list.size() - 1; k++) {
+				if (hall_list[k].hall_num == number::hall2) {
+					setDate(hall_list[k]);
+					Write("hall2.txt");
 					break;
 				}
 			}
 			break;
 		case 3:
-			for (int k = 0; k < spisakzali.size() - 1; k++) {
-				if (spisakzali[k].zala == nomer::zala3) {
-					setDate(spisakzali[k]);
-					Write("zala3.txt");
+			for (unsigned k = 0; k < hall_list.size() - 1; k++) {
+				if (hall_list[k].hall_num == number::hall3) {
+					setDate(hall_list[k]);
+					Write("hall3.txt");
 					break;
 				}
 			}
 			break;
-		default: cout << "error" << endl;
+		default: cout << "Error!" << endl;
 		}
 	}
-	void setDate(Zala& z) {
-		cout << "enter day and month" << endl;
-		cin >> den >> mesec; //if
-		if (z.svobodnadata[den][mesec] == true) {
-			cout << "zaeta data" << endl;
+	void setDate(Hall& h) {
+		cout << "Enter a day and a month for your performance" << endl;
+		cin >> day >> month; 
+		if (day < 1 || day > 30 || month < 1 || month >12) {
+			cout << "Error! Invalid input for day or month!" << endl;
 		}
 		else {
-			z.svobodnadata[den][mesec] = true;
-			cout << "uspeshno zapazena data" << endl;
-			zala = z;
+			if (h.date[day][month] == true) {
+				cout << "Date is already reserved!" << endl;
+			}
+			else {
+				h.date[day][month] = true;
+				cout << "Successfully reserved date!" << endl;
+				hall = h;
+			}
 		}
+		
 	}
 
 	
-	Zala getZala() {
-		return zala;
+	Hall getHall() {
+		return hall;
 	}
 	string getName() {
-		return perfname;
+		return performance_name;
 	}
 };
 class Reservation {
@@ -144,8 +145,15 @@ public:
 		seats_row = reserve.seats_row;
 		seats_col = reserve.seats_col;
 	}
-	Reservation& operator=(const Reservation& event) {
-
+	Reservation& operator=(const Reservation& reserve) {
+		if (this != &reserve)
+		{
+			this->respassword = reserve.respassword;
+			this->seats_row = reserve.seats_row;
+			this->seats_col = reserve.seats_col;
+			this->perf = reserve.perf;
+		}
+		return *this;
 	}
 	~Reservation() {
 
@@ -153,111 +161,110 @@ public:
 	void WriteRes(string filename) {
 		PerformanceFile.open(filename, ios::app);
 		if (PerformanceFile.is_open()) {
-			PerformanceFile << "Res Mesta: " << seats_row << " / " << seats_col << endl;
+			PerformanceFile << "Reserved seats: " << seats_row << " / " << seats_col << endl;
 			PerformanceFile.close();
 		}
 		else {
-			cout << "error file is not open" << endl;
+			cout << "Error! File is not open!" << endl;
 		}
 	}
-	void TicketRes(vector<Perf>& spisakperf) { 
+	void TicketRes(vector<Perf>& perf_list) {
 		cout << "Ticket res" << endl;
-		cout << "choose perf " << endl;
+		cout << "Choose a performance!" << endl;
 		int perfchoice;
-		for (int l = 0; l < spisakperf.size(); l++) {
-			cout << spisakperf[l].getName() << endl;
+		for (unsigned l = 0; l < perf_list.size(); l++) {
+			cout << perf_list[l].getName() << endl;
 		}
 		cin >> perfchoice;
 		cout << "Please choose a row and a seat" << endl;
 		unsigned row, col;
 		cin >> row >> col;
-		if (spisakperf[perfchoice-1].getZala().seats[row][col] == 'R') { //res
-			cout << "zaeto mqsto" << endl;
+		if (perf_list[perfchoice-1].getHall().seats[row][col] == 'R') { //res
+			cout << "Seat is already reserved!" << endl;
 		}
 		else {
-			spisakperf[perfchoice - 1].getZala().seats[row][col] = 'R'; //res
-			cout << "perf reserv choice zala seats: " << spisakperf[perfchoice - 1].getZala().seats[row][col] << endl;
-			cout << "uspeshno zapazeno mqsto" << endl;
+			perf_list[perfchoice - 1].getHall().seats[row][col] = 'R'; //res
+			cout << "Successfully reserved seat!" << endl;
 			seats_row = row;
 			seats_col = col;
-			perf = spisakperf[perfchoice - 1];
+			perf = perf_list[perfchoice - 1];
 
-			cout << "set password for your res " << endl;
+			cout << "Now set a password for your reservation!" << endl;
 			cin >> respassword;
-			cout << "pass set" << endl;
+			cout << "Password set" << endl;
 
-			switch (perf.getZala().zala) {
-			case nomer::zala1:WriteRes("zala1.txt"); break;
-			case nomer::zala2:WriteRes("zala2.txt"); break;
-			case nomer::zala3:WriteRes("zala3.txt"); break;
-			default: cout << "error" << endl;
+			switch (perf.getHall().hall_num) {
+			case number::hall1:WriteRes("hall1.txt"); break;
+			case number::hall2:WriteRes("hall2.txt"); break;
+			case number::hall3:WriteRes("hall3.txt"); break;
+			default: cout << "Error!" << endl;
 			}
 		}
 	}
 	void CancelRes() {
-
-		cout << "enter your res password " << endl;
+		cout << "Cancelling reservation" << endl;
+		cout << "Enter your reservation password!" << endl;
 		unsigned checkpass;
 		cin >> checkpass;
 		if (checkpass == respassword) {
-			perf.getZala().seats[seats_row][seats_col] = 'F';  //free
-			cout << "res canceled " << endl;
+			perf.getHall().seats[seats_row][seats_col] = 'F';  //free
+			cout << "Reservation canceled" << endl;
 		}
 		else {
-			cout << "password does not match " << endl;
+			cout << "Password does not match " << endl;
 		}
 
 	}	
 
-	void BuyTickets(vector<Perf>& spisakperf) {
-		cout << "choose perf " << endl;
+	void BuyTickets(vector<Perf>& perf_list) {
+		cout << "Choose a performance" << endl;
 		int perfchoice;
-		for (int l = 0; l < spisakperf.size(); l++) {
-			cout << spisakperf[l].getName() << endl;
+		for (unsigned l = 0; l < perf_list.size(); l++) {
+			cout << perf_list[l].getName() << endl;
 		}
 		cin >> perfchoice;
 		cout << "Please choose a row and a seat" << endl;
 		unsigned row, col;
 		cin >> row >> col;
-		cout << "perf buy choice zala seats: " << spisakperf[perfchoice - 1].getZala().seats[row][col] << endl;
-		if (spisakperf[perfchoice-1].getZala().seats[row][col] == 'B') { //bought
-			cout << "zaeto mqsto" << endl;
+		if (perf_list[perfchoice-1].getHall().seats[row][col] == 'B') { //bought
+			cout << "Seat already bought" << endl;
 			
 		}
-		else if (spisakperf[perfchoice-1].getZala().seats[row][col] == 'R') { //res
-			cout << "please enter your password " << endl;
+		else if (perf_list[perfchoice-1].getHall().seats[row][col] == 'R') { //res
+			cout << "Please enter your password " << endl;
 			unsigned checkpass;
 			cin >> checkpass;
 			if (checkpass == respassword) {
-				spisakperf[perfchoice-1].getZala().seats[seats_row][seats_col] = 'B';  //bought
-			cout << "res mqsto -> kupeno mqsto " << endl;
+				perf_list[perfchoice-1].getHall().seats[seats_row][seats_col] = 'B';  //bought
+			cout << "Your reserved seat is succesfully bought" << endl;
 			}
 			else {
-				cout << "password does not match " << endl;
+				cout << "Password does not match " << endl;
 			}
 		}
 		else  { //free
-			spisakperf[perfchoice-1].getZala().seats[row][col] = 'B'; //bought
-			cout << "uspeshno zakupeno mqsto" << endl;
+			perf_list[perfchoice-1].getHall().seats[row][col] = 'B'; //bought
+			cout << "Successfully bought seat" << endl;
 		}
 	}
 };
 
-void Checkseats(vector<Perf> spisakperf) {
-	cout << "choose perf " << endl;
+void Checkseats(vector<Perf> perf_list) {
+	cout << "Check seats" << endl;
+	cout << "Choose a performance" << endl;
 	int perfchoice;
-	for (int l = 0; l < spisakperf.size() - 1; l++) {
-		cout << spisakperf[l].getName() << endl;
+	for (unsigned l = 0; l < perf_list.size() - 1; l++) {
+		cout << perf_list[l].getName() << endl;
 	}
 	cin >> perfchoice;
-	Perf izbranperf = spisakperf[perfchoice];
+	Perf chosen_perf = perf_list[perfchoice];
 	int rescounter = 0;
-	for (unsigned i = 0; i < sizeof(izbranperf.getZala().seats) - 1; i++) {
-		for (unsigned j = 0; j < sizeof(izbranperf.getZala().seats[i]) - 1; j++)
-			if (izbranperf.getZala().seats[i][j] == 'R' || izbranperf.getZala().seats[i][j] == 'B') { //res || bought
+	for (unsigned i = 0; i < sizeof(chosen_perf.getHall().seats) - 1; i++) {
+		for (unsigned j = 0; j < sizeof(chosen_perf.getHall().seats[i]) - 1; j++)
+			if (chosen_perf.getHall().seats[i][j] == 'R' || chosen_perf.getHall().seats[i][j] == 'B') { //res || bought
 				rescounter++;
 			}
-		cout << "nonres are " << MAX_SEATS_IN_ZALA - rescounter << endl;
+		cout << "Nonreserved seats: " << MAX_SEATS_IN_HALLS - rescounter << endl;
 	}
 }
 void ClearFile(string filename) {
@@ -268,39 +275,39 @@ void ClearFile(string filename) {
 int main() {
 	
 	// 0) clear file
-	ClearFile("zala1.txt");
-	ClearFile("zala2.txt");
-	ClearFile("zala3.txt");
+	ClearFile("hall1.txt");
+	ClearFile("hall2.txt");
+	ClearFile("hall3.txt");
 
-	// 1) create zala
-	Zala z1, z2, z3;
-	z1.zala = nomer::zala1;
-	z2.zala = nomer::zala2;
-	z3.zala = nomer::zala3;
+	// 1) create hall
+	Hall z1, z2, z3;
+	z1.hall_num = number::hall1;
+	z2.hall_num = number::hall2;
+	z3.hall_num = number::hall3;
 
 	// 2) create perf
-	vector<Zala> spisakzali;
-	spisakzali.push_back(z1);
-	spisakzali.push_back(z2);
-	spisakzali.push_back(z3);
+	vector<Hall> hall_list;
+	hall_list.push_back(z1);
+	hall_list.push_back(z2);
+	hall_list.push_back(z3);
 	Perf perf1, perf2;
 	
-	perf1.setPerf(spisakzali);
-	//perf2.setPerf(spisakzali);
+	perf1.setPerf(hall_list);
+	perf2.setPerf(hall_list);
 	
 	// 3) create reservation
-	vector<Perf> spisakperf;
-	spisakperf.push_back(perf1);
-	//spisakperf.push_back(perf2);
+	vector<Perf> perf_list;
+	perf_list.push_back(perf1);
+	perf_list.push_back(perf2);
 	Reservation reserv1, reserv2;
-	reserv1.TicketRes(spisakperf);
-	//reserv2.TicketRes(spisakperf);
+	reserv1.TicketRes(perf_list);
+	reserv2.TicketRes(perf_list);
 
 	// 4) cancel reservation
-	//reserv1.CancelRes();
+	reserv1.CancelRes();
 
 	// 5) buy tickets
-	reserv1.BuyTickets(spisakperf);
-	//reserv2.BuyTickets(spisakperf);
+	reserv1.BuyTickets(perf_list);
+	reserv2.BuyTickets(perf_list);
 	return 0;
 }
