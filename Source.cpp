@@ -5,7 +5,7 @@
 using namespace std;
 const unsigned MAX_SEATS_IN_HALLS = 100;
 enum number {
-	hall1, hall2, hall3
+	hall1 , hall2, hall3
 };
 struct Hall {
 	number hall_num;
@@ -117,7 +117,9 @@ public:
 		
 	}
 
-	
+	void setSeat(int row, int col, char s) {
+		hall.seats[row][col] = s;
+	}
 	Hall getHall() {
 		return hall;
 	}
@@ -183,8 +185,8 @@ public:
 			cout << "Seat is already reserved!" << endl;
 		}
 		else {
-			perf_list[perfchoice - 1].getHall().seats[row][col] = 'R'; //res
-			cout << "Successfully reserved seat!" << endl;
+			perf_list[perfchoice - 1].setSeat(row, col, 'R'); //res
+			cout << "Seat successfully reserved !" << endl;
 			seats_row = row;
 			seats_col = col;
 			perf = perf_list[perfchoice - 1];
@@ -207,7 +209,7 @@ public:
 		unsigned checkpass;
 		cin >> checkpass;
 		if (checkpass == respassword) {
-			perf.getHall().seats[seats_row][seats_col] = 'F';  //free
+			perf.setSeat(seats_row, seats_col, 'F');  //free
 			cout << "Reservation canceled" << endl;
 		}
 		else {
@@ -217,6 +219,7 @@ public:
 	}	
 
 	void BuyTickets(vector<Perf>& perf_list) {
+		cout << "Buy Tickets" << endl;
 		cout << "Choose a performance" << endl;
 		int perfchoice;
 		for (unsigned l = 0; l < perf_list.size(); l++) {
@@ -228,14 +231,13 @@ public:
 		cin >> row >> col;
 		if (perf_list[perfchoice-1].getHall().seats[row][col] == 'B') { //bought
 			cout << "Seat already bought" << endl;
-			
 		}
 		else if (perf_list[perfchoice-1].getHall().seats[row][col] == 'R') { //res
 			cout << "Please enter your password " << endl;
 			unsigned checkpass;
 			cin >> checkpass;
 			if (checkpass == respassword) {
-				perf_list[perfchoice-1].getHall().seats[seats_row][seats_col] = 'B';  //bought
+				perf_list[perfchoice - 1].setSeat(row, col, 'B');  //bought
 			cout << "Your reserved seat is succesfully bought" << endl;
 			}
 			else {
@@ -243,8 +245,8 @@ public:
 			}
 		}
 		else  { //free
-			perf_list[perfchoice-1].getHall().seats[row][col] = 'B'; //bought
-			cout << "Successfully bought seat" << endl;
+			perf_list[perfchoice - 1].setSeat(row, col, 'B'); //bought
+			cout << "Seat successfully bought!" << endl;
 		}
 	}
 };
@@ -253,7 +255,7 @@ void Checkseats(vector<Perf> perf_list) {
 	cout << "Check seats" << endl;
 	cout << "Choose a performance" << endl;
 	int perfchoice;
-	for (unsigned l = 0; l < perf_list.size() - 1; l++) {
+	for (unsigned l = 0; l < perf_list.size(); l++) {
 		cout << perf_list[l].getName() << endl;
 	}
 	cin >> perfchoice;
@@ -264,8 +266,8 @@ void Checkseats(vector<Perf> perf_list) {
 			if (chosen_perf.getHall().seats[i][j] == 'R' || chosen_perf.getHall().seats[i][j] == 'B') { //res || bought
 				rescounter++;
 			}
-		cout << "Nonreserved seats: " << MAX_SEATS_IN_HALLS - rescounter << endl;
-	}
+		
+	} cout << "Nonreserved seats: " << MAX_SEATS_IN_HALLS - rescounter << endl;
 }
 void ClearFile(string filename) {
 	fstream PerformanceFile;
@@ -275,9 +277,9 @@ void ClearFile(string filename) {
 int main() {
 	
 	// 0) clear file
-	ClearFile("hall1.txt");
-	ClearFile("hall2.txt");
-	ClearFile("hall3.txt");
+	// ClearFile("hall1.txt");
+	// ClearFile("hall2.txt");
+	// ClearFile("hall3.txt");
 
 	// 1) create hall
 	Hall z1, z2, z3;
@@ -303,11 +305,15 @@ int main() {
 	reserv1.TicketRes(perf_list);
 	reserv2.TicketRes(perf_list);
 
+
 	// 4) cancel reservation
 	reserv1.CancelRes();
 
 	// 5) buy tickets
 	reserv1.BuyTickets(perf_list);
 	reserv2.BuyTickets(perf_list);
+
+	//6) check seats
+	Checkseats(perf_list);
 	return 0;
 }
