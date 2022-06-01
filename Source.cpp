@@ -9,16 +9,15 @@ enum number {
 };
 struct Hall {
 	number hall_num;
-	bool date[30][12];
+	bool hallday, hallmonth;
 	char seats[10][10];
-}; 
+};  
 
 class Perf {
 private:
 	string performance_name;
 	int day, month;
 	Hall hall;
-	fstream PerformanceFile;
 public:
 	Perf() {
 
@@ -50,7 +49,8 @@ public:
 
 	}
 	
-	void Write(string filename) {
+	void Write(const string& filename) {
+		fstream PerformanceFile;
 		PerformanceFile.open(filename,  ios::app);
 		if (PerformanceFile.is_open()) {
 			PerformanceFile << "Performance name: " << performance_name << " Performance date: " << day << " / " << month << endl;
@@ -105,11 +105,12 @@ public:
 			cout << "Error! Invalid input for day or month!" << endl;
 		}
 		else {
-			if (h.date[day][month] == true) {
+			if (h.hallday == true && h.hallmonth == true) {
 				cout << "Date is already reserved!" << endl;
 			}
 			else {
-				h.date[day][month] = true;
+				h.hallday = true;
+				h.hallmonth = true;
 				cout << "Successfully reserved date!" << endl;
 				hall = h;
 			}
@@ -126,13 +127,13 @@ public:
 	string getName() {
 		return performance_name;
 	}
+
 };
 class Reservation {
 private:
 	unsigned respassword;
 	unsigned seats_row, seats_col;
 	Perf perf;
-	fstream PerformanceFile;
 public:
 	Reservation() {
 		
@@ -160,7 +161,8 @@ public:
 	~Reservation() {
 
 	}
-	void WriteRes(string filename) {
+	void WriteRes(const string& filename) {
+		fstream PerformanceFile;
 		PerformanceFile.open(filename, ios::app);
 		if (PerformanceFile.is_open()) {
 			PerformanceFile << "Reserved seats: " << seats_row << " / " << seats_col << endl;
@@ -251,7 +253,7 @@ public:
 	}
 };
 
-void Checkseats(vector<Perf> perf_list) {
+void Checkseats(vector<Perf>& perf_list) {
 	cout << "Check seats" << endl;
 	cout << "Choose a performance" << endl;
 	int perfchoice;
@@ -259,7 +261,7 @@ void Checkseats(vector<Perf> perf_list) {
 		cout << perf_list[l].getName() << endl;
 	}
 	cin >> perfchoice;
-	Perf chosen_perf = perf_list[perfchoice];
+	Perf& chosen_perf = perf_list[perfchoice];
 	int rescounter = 0;
 	for (unsigned i = 0; i < sizeof(chosen_perf.getHall().seats) - 1; i++) {
 		for (unsigned j = 0; j < sizeof(chosen_perf.getHall().seats[i]) - 1; j++)
@@ -277,9 +279,9 @@ void ClearFile(string filename) {
 int main() {
 	
 	// 0) clear file
-	// ClearFile("hall1.txt");
-	// ClearFile("hall2.txt");
-	// ClearFile("hall3.txt");
+	ClearFile("hall1.txt");
+	ClearFile("hall2.txt");
+	 ClearFile("hall3.txt");
 
 	// 1) create hall
 	Hall z1, z2, z3;
@@ -294,16 +296,16 @@ int main() {
 	hall_list.push_back(z3);
 	Perf perf1, perf2;
 	
-	perf1.setPerf(hall_list);
-	perf2.setPerf(hall_list);
+	perf1.setPerf(hall_list);//
+	perf2.setPerf(hall_list);//
 	
 	// 3) create reservation
 	vector<Perf> perf_list;
 	perf_list.push_back(perf1);
 	perf_list.push_back(perf2);
 	Reservation reserv1, reserv2;
-	reserv1.TicketRes(perf_list);
-	reserv2.TicketRes(perf_list);
+	reserv1.TicketRes(perf_list);//
+	reserv2.TicketRes(perf_list);//
 
 
 	// 4) cancel reservation
